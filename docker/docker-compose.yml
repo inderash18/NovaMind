@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: aetheros_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=AetherOS
+      - DEBUG=true
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=sqlite+aiosqlite:////data/aetheros.db
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8001
+      - OLLAMA_ENDPOINT=http://host.docker.internal:11434
+      - LMSTUDIO_ENDPOINT=http://host.docker.internal:1234
+    volumes:
+      - ./data/logs:/logs
+      - ./data/backend:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+      - chromadb
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: aetheros_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    container_name: aetheros_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: aetheros_chromadb
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data/chromadb:/chroma/data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSISTIST_DIRECTORY=/chroma/data
+
+volumes:
+  data:
