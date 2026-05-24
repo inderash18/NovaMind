@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased bg-[#0b0f19] text-[#f9fafb] selection:bg-[#3b82f6]/30 overflow-x-hidden;
+  }
+}
+
+/* Elegant minimalist scrollbar customization for a premium desktop app feel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Global focus states reset for crisp UI spacing */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
